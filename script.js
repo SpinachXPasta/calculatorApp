@@ -16,11 +16,10 @@ var calcDisp = document.getElementById("display");
 var clear = document.getElementById("C");
 var eq = document.getElementById("equal");
 
-// 1 + 1 + 1 + 1 +
+
 
 function doCalc(x){
     //
-    console.log(hist)
     if (!(oppList.includes(x))){
         if (!firstInput ){
             disp = x;
@@ -31,20 +30,19 @@ function doCalc(x){
         }
         
     } else {
-        console.log(x);
-        disp = calcDisp.innerText; 
+        if (stack.length == 2){
+            disp = calcDisp.innerText;
+        } else {
+            console.log(hist.substring(0,hist.length - 1))
+            disp = calcEval(hist.substring(0,hist.length - 1));
+        }
+         
     }
 
     calcDisp.innerText = disp;
     
 
 }
-
-
-
-
-
-
 
 
 
