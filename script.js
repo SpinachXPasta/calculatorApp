@@ -6,6 +6,8 @@ var decLock = 0;
 var oppList = ["*","+","-","/"];
 var disp = 0;
 var firstInput = false;
+var eqLock = false;
+var err = false;
 
 
 
@@ -15,6 +17,32 @@ var calcHist = document.getElementById("history");
 var calcDisp = document.getElementById("display");
 var clear = document.getElementById("C");
 var eq = document.getElementById("equal");
+
+
+function isError(){
+    if (disp == "Infinity"){
+        calcDisp.innerText = "Error";
+        calcHist.innerText = "Error";
+        hist = 0;
+        stack = [];
+        decStack = [];
+        decLock = 0;
+        disp = 0;
+        firstInput = false;
+        var err = false;
+
+    } else if (String(disp).length > 12){
+        calcDisp.innerText = "Max Space";
+        calcHist.innerText = "Max Space";
+        hist = 0;
+        stack = [];
+        decStack = [];
+        decLock = 0;
+        disp = 0;
+        firstInput = false;
+        var err = false;
+    }  
+}
 
 
 
@@ -71,9 +99,26 @@ function histFunc(overide=false, fInput=false){
         calcHist.innerText = 0;
         calcDisp.innerText = 0;
     }
+
+    isError();
     
     
 }
+
+eq.addEventListener("click", function(){
+    if (!eqLock){
+        if (!(oppList.includes(hist[hist.length - 1]))){
+            disp = calcEval(hist.substring(0,hist.length));
+            calcDisp.innerText = disp;
+            hist = disp;
+            calcHist.innerText = disp;
+            eqLock = true;
+            isError();
+            
+        };
+    }
+})
+
 
 
 clear.addEventListener("click", function(){
@@ -95,6 +140,10 @@ for (let i of opps){
             if (firstInput){
                 //don't allow if last input was opp
                 if (!(oppList.includes(stack[stack.length-1]) && decStack.length == 0)){
+                    if (eqLock){
+                        eqLock = false;
+                    }
+
                         // if there are decimals being inserted then do
                     if (decStack.length > 0){
                         stack.push(decStack.join(""));
@@ -103,20 +152,11 @@ for (let i of opps){
                     //histlay the operator
                     stack.push(i.innerText);
                     decLock = 0;
-
-
-                    //console.log(stack);
-                    //console.log(decStack);
-                    //console.log(decLock);
-                    //console.log(fInput);
                     histFunc(overide=false,fInput=true);
 
                 }
                     
-
-            }
-            
-            
+            }           
 });
 }
 
@@ -125,7 +165,17 @@ for (let i of nums){
     i.addEventListener(
         "click", function(){
 
-            if (i.innerText != "." && decLock == 0){
+            if (eqLock){
+                hist = 0;
+                stack = [];
+                decStack = [];
+                decLock = 0;
+                disp = 0;
+                firstInput = false;
+                stack.push(i.innerText);
+                histFunc(overide=false,fInput=true);  
+                eqLock = false;
+            } else if (i.innerText != "." && decLock == 0){
                 stack.push(i.innerText);
                 histFunc(overide=false,fInput=true);  
             } else {
@@ -170,11 +220,6 @@ for (let i of nums){
                     
                 }
             }
-            
-            //console.log(stack);
-            //console.log(decStack);
-            //console.log(decLock);
-            //console.log(fInput);
                       
              
 });
