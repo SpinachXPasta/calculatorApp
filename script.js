@@ -5,6 +5,7 @@ var decStack = [];
 var decLock = 0;
 var oppList = ["*","+","-","/"];
 var disp = 0;
+var firstInput = false;
 
 
 
@@ -19,18 +20,22 @@ var eq = document.getElementById("equal");
 
 function doCalc(x){
     //
+    console.log(hist)
     if (!(oppList.includes(x))){
-        if (disp == 0 ){
+        if (!firstInput ){
+            disp = x;
+        } else if (oppList.includes(hist[hist.length - 2])){
             disp = x;
         }else {
             disp = disp + x;
         }
         
     } else {
-       disp = disp; 
+        console.log(x);
+        disp = calcDisp.innerText; 
     }
 
-    
+    calcDisp.innerText = disp;
     
 
 }
@@ -43,28 +48,30 @@ function doCalc(x){
 
 
 
-function histFunc(overide=false){
-    let idx = stack.length - 1;
-    if (decLock == 0){
-        if (hist == 0){
-            hist = String(stack[idx]);
-            doCalc(stack[idx]);
-        } else {
-            hist = String(hist) + String(stack[idx]);
-            doCalc(stack[idx]);
-        }
-    } else {
-        let idxDec = decStack.length - 1;
-        hist = String(hist) + String(decStack[idxDec]);
-        doCalc(decStack[idxDec]);
-
-    }
+function histFunc(overide=false, fInput=false){
     if (!overide){
+        let idx = stack.length - 1;
+        if (decLock == 0){
+            if (!firstInput){
+                hist = String(stack[idx]);
+                doCalc(stack[idx]);
+            } else {
+                hist = String(hist) + String(stack[idx]);
+                doCalc(stack[idx]);
+            }
+        } else {
+            let idxDec = decStack.length - 1;
+            hist = String(hist) + String(decStack[idxDec]);
+            doCalc(decStack[idxDec]);
+
+        }
+        if (fInput){
+            firstInput = true;
+        }
         calcHist.innerText = hist;
     } else {
-        hist = 0
-        disp = 0;
         calcHist.innerText = 0;
+        calcDisp.innerText = 0;
     }
     
     
@@ -77,7 +84,8 @@ clear.addEventListener("click", function(){
     decStack = [];
     decLock = 0;
     disp = 0;
-    histFunc(overide=true);
+    firstInput = false;
+    histFunc(overide=true, fInput=firstInput);
 
 })
 
@@ -86,7 +94,7 @@ for (let i of opps){
     i.addEventListener(
         "click", function(){
             // if the first insert is operator dont allow it also 
-            if (hist != 0){
+            if (firstInput){
                 //don't allow if last input was opp
                 if (!(oppList.includes(stack[stack.length-1]) && decStack.length == 0)){
                         // if there are decimals being inserted then do
@@ -99,10 +107,11 @@ for (let i of opps){
                     decLock = 0;
 
 
-                    console.log(stack);
-                    console.log(decStack);
-                    console.log(decLock);
-                    histFunc();
+                    //console.log(stack);
+                    //console.log(decStack);
+                    //console.log(decLock);
+                    //console.log(fInput);
+                    histFunc(overide=false,fInput=true);
 
                 }
                     
@@ -120,20 +129,20 @@ for (let i of nums){
 
             if (i.innerText != "." && decLock == 0){
                 stack.push(i.innerText);
-                histFunc();  
+                histFunc(overide=false,fInput=true);  
             } else {
                 if (stack.length == 0 && decStack.lenth == 0){
-                    console.log("here3")
+                    
                     decStack.push(0);
                     decStack.push(".");
                     decLock = 1;
-                    histFunc();  
+                    histFunc(overide=false,fInput=true);  
                 } else if (decLock == 0 && oppList.includes(stack.length-1)) {
-                    console.log("here2")
+                    
                     decStack.push(0);
                     decStack.push(".");
                     decLock = 1;
-                    histFunc();  
+                    histFunc(overide=false,fInput=true);  
                 } else if (decLock == 0 && !(oppList.includes(stack.length-1))){
                     //traverse back until non number is found
                     let revNum = [];
@@ -151,22 +160,23 @@ for (let i of nums){
                     decStack.push(revNum.join(""));
                     decStack.push(i.innerText);
                     decLock = 1;
-                    histFunc();  
+                    histFunc(overide=false,fInput=true);  
 
                 
                 } else {
                     if (i.innerText != "."){
                         decStack.push(i.innerText);
                         decLock = 1;
-                        histFunc();  
+                        histFunc(overide=false,fInput=true);  
                     }
                     
                 }
             }
             
-            console.log(stack);
-            console.log(decStack);
-            console.log(decLock);
+            //console.log(stack);
+            //console.log(decStack);
+            //console.log(decLock);
+            //console.log(fInput);
                       
              
 });
