@@ -19,6 +19,12 @@ var clear = document.getElementById("C");
 var eq = document.getElementById("equal");
 
 
+function calcEval(fn) {
+    return new Function('return ' + fn)();
+  }
+  
+
+
 function isError(){
     if (disp == "Infinity"){
         calcDisp.innerText = "Error";
